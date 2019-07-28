@@ -1,0 +1,13 @@
+version: 2
+jobs:
+ build:
+   machine: true
+   filters:
+     - tags:
+         only: '/.*/'
+   steps:
+     - checkout
+     # build the application image
+     - run: docker build -t 313v3nrocks/centos-s6:$CIRCLE_TAG .
+     # deploy the image
+     - run: docker push 313v3nrocks/centos-s6:$CIRCLE_TAG
