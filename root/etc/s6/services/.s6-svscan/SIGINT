@@ -1,0 +1,36 @@
+#!/bin/execlineb -S0
+foreground { s6-echo "[s6-scan] received SIGINT" }
+
+with-contenv
+
+if { s6-echo "[s6-scan] sending SIGINTs" }
+
+# send SIGINT to services
+foreground {
+  pipeline { s6-ls -0 -- /var/run/s6/etc/services.d }
+  forstdin -0 -p -- i
+  importas -u i i
+  foreground {
+    if { s6-echo "[s6-scan] sending SIGINT to ${i}" }
+    background {
+      s6-svc -x -i ./${i}
+    }
+  }
+}
+
+foreground {
+    pipeline { s6-ls -0 -- /var/run/s6/etc/services.d }
+    forstdin -0 -p -- i
+    importas -u i i
+    importas -u -D 5000 S6_STOP_GRACETIME S6_STOP_GRACETIME
+    foreground {
+        ifthenelse -X { s6-svwait -D -t ${S6_STOP_GRACETIME} ./${i} }
+        { s6-echo "[s6-scan] service ${i} stopped" }
+        { s6-echo "[s6-scan] service ${i} timed out" }
+    }
+}
+
+if { s6-echo "[s6-scan] sending SIGTERM" }
+foreground { s6-svscanctl -t . }
+
+

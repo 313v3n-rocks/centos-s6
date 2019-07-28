@@ -1,0 +1,18 @@
+#!/usr/bin/with-contenv sh
+
+if [ "$SERVICE_CONSUL" != 1 ]; then
+    rm -rf /etc/services.d/consul
+    rm -rf /etc/services.d/consul-template
+fi
+
+if [ "$SERVICE_KAPACITOR" != 1 ]; then
+    rm -rf /etc/services.d/kapacitor
+fi
+
+if [ "$SERVICE_TELEGRAF" != 1 ]; then
+    rm -rf /etc/services.d/telegraf
+fi
+
+if [ "$SERVICE_CRON" != 1 ]; then
+    rm -rf /etc/services.d/cron
+fi

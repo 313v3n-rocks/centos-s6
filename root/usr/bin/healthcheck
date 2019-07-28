@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv sh
+
+#
+# This script return 0 if all healthchecks in /etc/healthchecks.d/ are ok
+#
+
+for f in /etc/healthchecks.d/*; do
+    if [[ -x $f ]]; then
+        $f && continue
+
+        echo "Healthcheck $f failed!"
+        exit 1
+    fi
+done
+
+exit 0
